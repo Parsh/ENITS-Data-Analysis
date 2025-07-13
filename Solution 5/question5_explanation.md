@@ -38,13 +38,13 @@ Exponential smoothing is a forecasting technique that:
 ### Mathematical Formula
 **Basic Exponential Smoothing**:
 ```
-ŷₜ = α × yₜ + (1-α) × ŷₜ₋₁
+ŷₜ = α × yₑ₋₁ + (1-α) × ŷₜ₋₁
 ```
 
 Where:
-- ŷₜ = forecast for period t (or next period forecast)
-- yₜ = actual value in current period t
-- ŷₜ₋₁ = forecast for period t-1 (previous forecast)
+- ŷₜ = forecast for period t
+- yₜ₋₁ = actual value in period t-1
+- ŷₜ₋₁ = forecast for period t-1
 - α = smoothing constant (0 < α < 1)
 
 ## Part 1: Compute Simple Exponential Smoothing Model
@@ -58,47 +58,22 @@ y₀ = (10+15+18+20+25+30+35+40+45+50+55+60) / 12 = 403/12 = 33.58
 
 **Given**: α = 0.07, so (1-α) = 0.93
 
-**Important Note**: Each forecast ŷₜ uses the actual value from the same period (yₜ) to create a smoothed estimate.
-
-| Month | t | Actual (yₜ) | Calculation | Smoothed Value (ŷₜ) |
-|-------|---|-------------|-------------|---------------------|
+| Month | t | Actual (yₜ) | Calculation | Forecast (ŷₜ) |
+|-------|---|-------------|-------------|---------------|
 | Initial | 0 | - | Mean value | 33.58 |
-| January | 1 | 10 | 0.07×10 + 0.93×33.58 | 31.93 |
-| February | 2 | 15 | 0.07×15 + 0.93×31.93 | 30.74 |
-| March | 3 | 18 | 0.07×18 + 0.93×30.74 | 29.85 |
-| April | 4 | 20 | 0.07×20 + 0.93×29.85 | 29.10 |
-| May | 5 | 25 | 0.07×25 + 0.93×29.10 | 28.87 |
-| June | 6 | 30 | 0.07×30 + 0.93×28.87 | 28.95 |
-| July | 7 | 35 | 0.07×35 + 0.93×28.95 | 29.37 |
-| August | 8 | 40 | 0.07×40 + 0.93×29.37 | 30.12 |
-| September | 9 | 45 | 0.07×45 + 0.93×30.12 | 31.16 |
-| October | 10 | 50 | 0.07×50 + 0.93×31.16 | 32.48 |
-| November | 11 | 55 | 0.07×55 + 0.93×32.48 | 34.05 |
-| December | 12 | 60 | 0.07×60 + 0.93×34.05 | 35.87 |
+| January | 1 | 10 | 0.07×33.58 + 0.93×33.58 | 31.93 |
+| February | 2 | 15 | 0.07×10 + 0.93×31.93 | 30.74 |
+| March | 3 | 18 | 0.07×15 + 0.93×30.74 | 29.85 |
+| April | 4 | 20 | 0.07×18 + 0.93×29.85 | 29.10 |
+| May | 5 | 25 | 0.07×20 + 0.93×29.10 | 28.87 |
+| June | 6 | 30 | 0.07×25 + 0.93×28.87 | 28.95 |
+| July | 7 | 35 | 0.07×30 + 0.93×28.95 | 29.37 |
+| August | 8 | 40 | 0.07×35 + 0.93×29.37 | 30.12 |
+| September | 9 | 45 | 0.07×40 + 0.93×30.12 | 31.16 |
+| October | 10 | 50 | 0.07×45 + 0.93×31.16 | 32.48 |
+| November | 11 | 55 | 0.07×50 + 0.93×32.48 | 34.05 |
+| December | 12 | 60 | 0.07×55 + 0.93×34.05 | 35.87 |
 
-### Detailed Calculations (first few months):
-
-**January (t=1)** - Creating smoothed value for January:
-```
-ŷ₁ = α×y₁ + (1-α)×ŷ₀ = 0.07×10 + 0.93×33.58 = 0.70 + 31.23 = 31.93
-```
-
-**February (t=2)** - Creating smoothed value for February:
-```
-ŷ₂ = α×y₂ + (1-α)×ŷ₁ = 0.07×15 + 0.93×31.93 = 1.05 + 29.69 = 30.74
-```
-
-**March (t=3)** - Creating smoothed value for March:
-```
-ŷ₃ = α×y₃ + (1-α)×ŷ₂ = 0.07×18 + 0.93×30.74 = 1.26 + 28.59 = 29.85
-```
-
-**Key Insight**: Each smoothed value (ŷₜ) incorporates the current period's actual observation, making it a "real-time" adjustment to our running average. The next period's forecast would then be based on this smoothed value.
-```
-ŷ₃ = α×y₂ + (1-α)×ŷ₂ = 0.07×15 + 0.93×31.93 = 1.05 + 29.69 = 30.74
-```
-
-And so on...
 
 ## Part 2: Compute the Standard Error
 
@@ -107,7 +82,7 @@ And so on...
 
 **Formula**:
 ```
-s = √[Σ(yₜ - ŷₜ₋₁)² / (n-1)]
+s = √[Σ(yₑ - ŷₜ₋₁)² / (n-1)]
 ```
 
 ### Step-by-Step Calculation
@@ -155,10 +130,7 @@ Where:
 ### Calculation
 
 **Point Forecast for t=13** (January of next year):
-Since we don't have the actual value for January yet, we use the last smoothed value as our forecast:
-Forecast for t=13 = ŷ₁₂ = 35.87
-
-**Note**: This represents our best estimate for January of the next year based on the exponential smoothing pattern through December.
+The forecast for t=13 would be: ŷ₁₃ = 35.87 (last calculated forecast)
 
 **95% Prediction Interval**:
 ```
